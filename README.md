@@ -75,7 +75,7 @@ After running `travel <network>`, these are exported:
 ### Building from Source
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/stargate.git
+git clone https://github.com/imqdee/stargate.git
 cd stargate
 cargo build --release
 ```
@@ -116,37 +116,3 @@ zsh -c 'eval "$(./target/release/stargate init zsh)" && travel arb && current'
 ```bash
 cargo test
 ```
-
-### Project Structure
-
-```
-src/
-├── main.rs           # CLI entry point (clap)
-├── config.rs         # Config file handling (~/.stargate/config.toml)
-├── networks.rs       # Network definitions
-└── commands/
-    ├── config.rs     # config set api-key
-    ├── current.rs    # Print current network
-    ├── explorer.rs   # Open block explorer
-    ├── init.rs       # Shell integration script
-    ├── list.rs       # List networks
-    └── travel.rs     # Switch networks
-```
-
-### Adding a New Network
-
-Edit `src/networks.rs` and add a new entry to the `NETWORKS` array:
-
-```rust
-Network {
-    name: "newchain",
-    aliases: &["nc"],
-    chain_id: 12345,
-    alchemy_subdomain: Some("newchain-mainnet"),
-    explorer_url: Some("https://explorer.newchain.io"),
-},
-```
-
-## License
-
-MIT
