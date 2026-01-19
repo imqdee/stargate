@@ -37,10 +37,11 @@ Config is stored at `~/.stargate/config.toml`.
 ## Usage
 
 ```bash
-# Switch to a network
+# Switch to a network (by name, alias, or chain ID)
 sg travel mainnet
 sg travel polygon
 sg travel arb        # aliases work too
+sg travel 42161      # chain IDs work too
 
 # Switch to local anvil
 sg root

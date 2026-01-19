@@ -19,7 +19,13 @@ impl Network {
         if self.name == query {
             return true;
         }
-        self.aliases.iter().any(|&alias| alias == query)
+        if self.aliases.iter().any(|&alias| alias == query) {
+            return true;
+        }
+        if let Ok(chain_id) = query.parse::<u64>() {
+            return self.chain_id == chain_id;
+        }
+        false
     }
 }
 
