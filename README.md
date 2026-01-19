@@ -83,6 +83,17 @@ After running `travel <network>`, these are exported:
 - `STARGATE_NETWORK` - Current network name
 - `STARGATE_CHAIN_ID` - Current chain ID
 
+## Starship Integration
+
+[Starship](https://starship.rs/) users can display the current network name in their prompt by adding this to their `starship.toml`:
+
+```toml
+# display the network name currently connected with cast
+[env_var.STARGATE_NETWORK]
+default = 'local'
+format = "[$env_value]($style)"
+```
+
 ## Developers
 
 ### Building from Source
