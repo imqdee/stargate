@@ -1,0 +1,20 @@
+[package]
+name = "stargate-evm"
+version = "0.1.0"
+edition = "2024"
+description = "Blockchain network switcher CLI for Foundry"
+license = "MIT"
+repository = "https://github.com/imqdee/stargate"
+keywords = ["ethereum", "blockchain", "foundry", "web3", "cli"]
+categories = ["command-line-utilities", "development-tools"]
+
+[[bin]]
+name = "stargate"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+dirs = "5"
+open = "5"
