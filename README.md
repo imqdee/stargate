@@ -5,37 +5,30 @@ Blockchain network switcher CLI for [Foundry](https://book.getfoundry.sh/). Swit
 ## Installation
 
 ```bash
-cargo install stargate
+cargo install stargate-evm
 ```
 
 Then install shell integration:
 
 ```bash
-# Auto-install to ~/.zshrc
-stargate init zsh --install
+# Install to ~/.zshrc
+stargate init zsh
 
 # Or for bash
-stargate init bash --install
+stargate init bash
 ```
 
 Restart your shell or run `source ~/.zshrc` to activate.
-
-<details>
-<summary>Manual installation</summary>
-
-Add to your `~/.zshrc` (or `~/.bashrc`):
-
-```bash
-eval "$(stargate init zsh)"
-```
-
-</details>
 
 ## Configuration
 
 Set your [Alchemy](https://www.alchemy.com/) API key:
 
 ```bash
+# Interactive mode (recommended - input is hidden)
+stargate config set api-key
+
+# Or pass directly (visible in shell history)
 stargate config set api-key YOUR_ALCHEMY_KEY
 ```
 
@@ -45,23 +38,23 @@ Config is stored at `~/.stargate/config.toml`.
 
 ```bash
 # Switch to a network
-stargate travel mainnet
-stargate travel polygon
-stargate travel arb        # aliases work too
+sg travel mainnet
+sg travel polygon
+sg travel arb        # aliases work too
 
 # Switch to local anvil
-stargate root
+sg root
 
 # See current network
-stargate current
+sg current
 
 # List all networks
-stargate list
+sg list
 
 # Open block explorer
-stargate explorer               # opens explorer homepage
-stargate explorer 0x1234...     # opens address page
-stargate explorer 0xabcd...     # opens transaction page
+sg explorer               # opens explorer homepage
+sg explorer 0x1234...     # opens address page
+sg explorer 0xabcd...     # opens transaction page
 ```
 
 ## Supported Networks
@@ -124,12 +117,9 @@ Test shell integration with local build:
 eval "$(./target/release/stargate travel mainnet)"
 echo $ETH_RPC_URL
 
-# Test full shell integration in a subshell
-zsh -c 'eval "$(./target/release/stargate init zsh)" && travel arb && current'
-
-# Test --install flag (creates backup first)
+# Test init (creates backup first)
 cp ~/.zshrc ~/.zshrc.bak
-./target/release/stargate init zsh --install
+./target/release/stargate stargate-init zsh
 ```
 
 ### Running Tests

@@ -14,23 +14,28 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Output shell integration code
+    /// Install shell integration to config file
+    #[command(name = "init")]
     Init {
         /// Shell type (zsh, bash)
         shell: String,
-        /// Install to shell config file (~/.zshrc or ~/.bashrc)
-        #[arg(long)]
-        install: bool,
     },
     /// Switch to a network
     Travel {
         /// Network name or alias (e.g., mainnet, eth, polygon, arb)
         network: String,
+        /// Suppress output message
+        #[arg(short, long)]
+        silent: bool,
     },
     /// Print current network name and chain ID
     Current,
     /// Switch to anvil (local network)
-    Root,
+    Root {
+        /// Suppress output message
+        #[arg(short, long)]
+        silent: bool,
+    },
     /// Open block explorer in browser
     Explorer {
         /// Address or transaction hash to look up
@@ -56,10 +61,9 @@ enum ConfigAction {
 
 #[derive(Subcommand)]
 enum ConfigSetting {
-    /// Set the Alchemy API key
+    /// Set the Alchemy API key (prompts securely if not provided)
     ApiKey {
-        /// Your Alchemy API key
-        key: String,
+        key: Option<String>,
     },
 }
 
@@ -67,15 +71,15 @@ fn main() {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Init { shell, install } => commands::init::run(&shell, install),
-        Commands::Travel { network } => commands::travel::run(&network),
+        Commands::Init { shell } => commands::init::run(&shell),
+        Commands::Travel { network, silent } => commands::travel::run(&network, silent),
         Commands::Current => commands::current::run(),
-        Commands::Root => commands::travel::run("anvil"),
+        Commands::Root { silent } => commands::travel::run("anvil", silent),
         Commands::Explorer { target } => commands::explorer::run(target.as_deref()),
         Commands::List => commands::list::run(),
         Commands::Config { action } => match action {
             ConfigAction::Set { setting } => match setting {
-                ConfigSetting::ApiKey { key } => commands::config::set_api_key(&key),
+                ConfigSetting::ApiKey { key } => commands::config::set_api_key(key),
             },
         },
     }

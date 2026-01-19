@@ -1,7 +1,7 @@
 use crate::config::Config;
 use crate::networks::find_network;
 
-pub fn run(network_name: &str) {
+pub fn run(network_name: &str, silent: bool) {
     let config = Config::load();
 
     let Some(network) = find_network(network_name) else {
@@ -28,5 +28,10 @@ pub fn run(network_name: &str) {
         println!("export BLOCK_EXPLORER=\"{}\"", explorer);
     } else {
         println!("unset BLOCK_EXPLORER");
+    }
+
+    // User-friendly message (stderr, not captured by eval)
+    if !silent {
+        eprintln!("Moved to {} (chain_id: {})", network.name, network.chain_id);
     }
 }

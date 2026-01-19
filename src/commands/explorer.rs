@@ -1,9 +1,9 @@
 use std::env;
 
 pub fn run(target: Option<&str>) {
+    let network = env::var("STARGATE_NETWORK").ok();
     let Some(explorer) = env::var("BLOCK_EXPLORER").ok() else {
-        eprintln!("No block explorer available for current network.");
-        eprintln!("Are you on anvil? Try 'travel mainnet' first.");
+        eprintln!("No block explorer available for {}.", network.as_deref().unwrap_or("unknown network"));
         std::process::exit(1);
     };
 

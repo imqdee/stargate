@@ -6,7 +6,7 @@ pub fn run() {
 
     match (network, chain_id) {
         (Some(net), Some(id)) => {
-            println!("{} (chain_id: {})", net, id);
+            println!("{} ({})", net, id);
         }
         _ => {
             println!("No network selected. Run 'travel <network>' first.");
