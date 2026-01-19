@@ -38,24 +38,26 @@ Config is stored at `~/.stargate/config.toml`.
 
 ```bash
 # Switch to a network (by name, alias, or chain ID)
-sg travel mainnet
-sg travel polygon
+sg travel mainnet    # using name
 sg travel arb        # aliases work too
 sg travel 42161      # chain IDs work too
+sg t polygon         # using the alias
 
 # Switch to local anvil
 sg root
 
 # See current network
 sg current
+sg c                # using the alias
 
 # List all networks
 sg list
 
 # Open block explorer
-sg explorer               # opens explorer homepage
+sg explorer
 sg explorer 0x1234...     # opens address page
 sg explorer 0xabcd...     # opens transaction page
+sg e                      # using the alias
 ```
 
 ## Supported Networks

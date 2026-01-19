@@ -21,6 +21,7 @@ enum Commands {
         shell: String,
     },
     /// Switch to a network
+    #[command(visible_alias = "t")]
     Travel {
         /// Network name or alias (e.g., mainnet, eth, polygon, arb)
         network: String,
@@ -29,6 +30,7 @@ enum Commands {
         silent: bool,
     },
     /// Print current network name and chain ID
+    #[command(visible_alias = "c")]
     Current,
     /// Switch to anvil (local network)
     Root {
@@ -37,6 +39,7 @@ enum Commands {
         silent: bool,
     },
     /// Open block explorer in browser
+    #[command(visible_alias = "e")]
     Explorer {
         /// Address or transaction hash to look up
         target: Option<String>,
