@@ -32,6 +32,6 @@ pub fn run(network_name: &str, silent: bool) {
 
     // User-friendly message (stderr, not captured by eval)
     if !silent {
-        eprintln!("Moved to {} (chain_id: {})", network.name, network.chain_id);
+        eprintln!("Moved to {} ({})", network.name, network.chain_id);
     }
 }
