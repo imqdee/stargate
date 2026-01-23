@@ -102,7 +102,7 @@ pub static NETWORKS: &[Network] = &[
     },
     Network {
         name: "polygon-zkevm",
-        aliases: &[""],
+        aliases: &[],
         chain_id: 1101,
         alchemy_subdomain: Some("polygonzkevm-mainnet"),
         explorer_url: Some("https://zkevm.polygonscan.com"),
