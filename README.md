@@ -8,14 +8,10 @@ Blockchain network switcher CLI for [Foundry](https://book.getfoundry.sh/). Swit
 cargo install stargate-evm
 ```
 
-Then install shell integration:
+Add to your `~/.zshrc` (or `~/.bashrc` for bash):
 
 ```bash
-# Install to ~/.zshrc
-stargate init zsh
-
-# Or for bash
-stargate init bash
+eval "$(stargate init zsh)"
 ```
 
 Restart your shell or run `source ~/.zshrc` to activate.
@@ -62,17 +58,17 @@ sg e                      # using the alias
 
 ## Supported Networks
 
-| Network  | Aliases      | Chain ID |
-|----------|--------------|----------|
-| mainnet  | eth, ethereum| 1        |
-| polygon  | -            | 137      |
-| optimism | op           | 10       |
-| arbitrum | arb          | 42161    |
-| base     | -            | 8453     |
-| bnb      | bsc          | 56       |
-| linea    | -            | 59144    |
-| ink      | -            | 57073    |
-| anvil    | local        | 31337    |
+| Network  | Aliases       | Chain ID |
+| -------- | ------------- | -------- |
+| mainnet  | eth, ethereum | 1        |
+| polygon  | -             | 137      |
+| optimism | op            | 10       |
+| arbitrum | arb           | 42161    |
+| base     | -             | 8453     |
+| bnb      | bsc           | 56       |
+| linea    | -             | 59144    |
+| ink      | -             | 57073    |
+| anvil    | local         | 31337    |
 
 ## Environment Variables
 
@@ -131,9 +127,12 @@ Test shell integration with local build:
 eval "$(./target/release/stargate switch mainnet)"
 echo $ETH_RPC_URL
 
-# Test init (creates backup first)
-cp ~/.zshrc ~/.zshrc.bak
-./target/release/stargate stargate-init zsh
+# Test init output
+./target/release/stargate init zsh
+
+# Test full integration
+eval "$(./target/release/stargate init zsh)"
+sg list
 ```
 
 ### Running Tests
