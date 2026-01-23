@@ -21,8 +21,8 @@ enum Commands {
         shell: String,
     },
     /// Switch to a network
-    #[command(visible_alias = "t")]
-    Travel {
+    #[command(visible_alias = "s")]
+    Switch {
         /// Network name or alias (e.g., mainnet, eth, polygon, arb)
         network: String,
         /// Suppress output message
@@ -75,9 +75,9 @@ fn main() {
 
     match cli.command {
         Commands::Init { shell } => commands::init::run(&shell),
-        Commands::Travel { network, silent } => commands::travel::run(&network, silent),
+        Commands::Switch { network, silent } => commands::switch::run(&network, silent),
         Commands::Current => commands::current::run(),
-        Commands::Root { silent } => commands::travel::run("anvil", silent),
+        Commands::Root { silent } => commands::switch::run("anvil", silent),
         Commands::Explorer { target } => commands::explorer::run(target.as_deref()),
         Commands::List => commands::list::run(),
         Commands::Config { action } => match action {

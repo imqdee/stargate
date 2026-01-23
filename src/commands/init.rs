@@ -5,7 +5,7 @@ use std::path::PathBuf;
 const SHELL_INTEGRATION: &str = r#"# Stargate - blockchain network switcher
 sg() {
     case "$1" in
-        travel|t|root)
+        switch|s|root)
             eval "$(command stargate "$@")"
             ;;
         *)
@@ -15,7 +15,7 @@ sg() {
 }
 
 #  Stargate - Set default anvil network
-eval "$(command stargate travel anvil --silent)"
+eval "$(command stargate switch anvil --silent)"
 "#;
 
 pub fn run(shell: &str) {

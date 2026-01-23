@@ -3,4 +3,4 @@ pub mod current;
 pub mod explorer;
 pub mod init;
 pub mod list;
-pub mod travel;
+pub mod switch;

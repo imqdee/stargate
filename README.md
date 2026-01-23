@@ -38,10 +38,10 @@ Config is stored at `~/.stargate/config.toml`.
 
 ```bash
 # Switch to a network (by name, alias, or chain ID)
-sg travel mainnet    # using name
-sg travel arb        # aliases work too
-sg travel 42161      # chain IDs work too
-sg t polygon         # using the alias
+sg switch mainnet    # using name
+sg switch arb        # aliases work too
+sg switch 42161      # chain IDs work too
+sg s polygon         # using the alias
 
 # Switch to local anvil
 sg root
@@ -76,7 +76,7 @@ sg e                      # using the alias
 
 ## Environment Variables
 
-After running `travel <network>`, these are exported:
+After running `switch <network>`, these are exported:
 
 - `ETH_RPC_URL` - RPC endpoint (Foundry reads this automatically)
 - `BLOCK_EXPLORER` - Block explorer base URL
@@ -121,14 +121,14 @@ Build and run directly:
 ```bash
 cargo build --release
 ./target/release/stargate list
-./target/release/stargate travel mainnet
+./target/release/stargate switch mainnet
 ```
 
 Test shell integration with local build:
 
 ```bash
-# Test travel output
-eval "$(./target/release/stargate travel mainnet)"
+# Test switch output
+eval "$(./target/release/stargate switch mainnet)"
 echo $ETH_RPC_URL
 
 # Test init (creates backup first)

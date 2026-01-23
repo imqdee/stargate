@@ -9,7 +9,7 @@ pub fn run() {
             println!("{} ({})", net, id);
         }
         _ => {
-            println!("No network selected. Run 'travel <network>' first.");
+            println!("No network selected. Run 'switch <network>' first.");
         }
     }
 }
