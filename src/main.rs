@@ -43,6 +43,9 @@ enum Commands {
     Explorer {
         /// Address or transaction hash to look up
         target: Option<String>,
+        /// Print URL instead of opening in browser
+        #[arg(short, long)]
+        print: bool,
     },
     /// List all available networks
     List,
@@ -78,7 +81,7 @@ fn main() {
         Commands::Switch { network, silent } => commands::switch::run(&network, silent),
         Commands::Current => commands::current::run(),
         Commands::Root { silent } => commands::switch::run("anvil", silent),
-        Commands::Explorer { target } => commands::explorer::run(target.as_deref()),
+        Commands::Explorer { target, print } => commands::explorer::run(target.as_deref(), print),
         Commands::List => commands::list::run(),
         Commands::Config { action } => match action {
             ConfigAction::Set { setting } => match setting {

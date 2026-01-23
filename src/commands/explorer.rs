@@ -1,6 +1,6 @@
 use std::env;
 
-pub fn run(target: Option<&str>) {
+pub fn run(target: Option<&str>, print: bool) {
     let network = env::var("STARGATE_NETWORK").ok();
     let Some(explorer) = env::var("BLOCK_EXPLORER").ok() else {
         eprintln!("No block explorer available for {}.", network.as_deref().unwrap_or("unknown network"));
@@ -23,7 +23,9 @@ pub fn run(target: Option<&str>) {
         None => explorer,
     };
 
-    if let Err(e) = open::that(&url) {
+    if print {
+        println!("{}", url);
+    } else if let Err(e) = open::that(&url) {
         eprintln!("Failed to open browser: {}", e);
         eprintln!("URL: {}", url);
         std::process::exit(1);
