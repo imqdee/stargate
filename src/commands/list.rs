@@ -1,8 +1,8 @@
 use crate::networks::NETWORKS;
 
 pub fn run() {
-    println!("{:<12} {:<15} {:>10}   {}", "Network", "Aliases", "Chain ID", "Explorer");
-    println!("{}", "-".repeat(70));
+    println!("{:<20} {:<15} {:>10}   {}", "Network", "Aliases", "Chain ID", "Explorer");
+    println!("{}", "-".repeat(75));
 
     for network in NETWORKS.iter() {
         let aliases = if network.aliases.is_empty() {
@@ -14,7 +14,7 @@ pub fn run() {
         let explorer = network.explorer_url.unwrap_or("-");
 
         println!(
-            "{:<12} {:<15} {:>10}   {}",
+            "{:<20} {:<15} {:>10}   {}",
             network.name, aliases, network.chain_id, explorer
         );
     }
