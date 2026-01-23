@@ -217,3 +217,183 @@ pub static NETWORKS: &[Network] = &[
 pub fn find_network(query: &str) -> Option<&'static Network> {
     NETWORKS.iter().find(|n| n.matches(query))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ==================== Network::matches() tests ====================
+
+    #[test]
+    fn matches_by_exact_name() {
+        let mainnet = find_network("mainnet").unwrap();
+        assert!(mainnet.matches("mainnet"));
+    }
+
+    #[test]
+    fn matches_by_name_case_insensitive() {
+        let mainnet = find_network("mainnet").unwrap();
+        assert!(mainnet.matches("MAINNET"));
+        assert!(mainnet.matches("Mainnet"));
+        assert!(mainnet.matches("MainNet"));
+    }
+
+    #[test]
+    fn matches_by_alias() {
+        let mainnet = find_network("mainnet").unwrap();
+        assert!(mainnet.matches("eth"));
+        assert!(mainnet.matches("ethereum"));
+    }
+
+    #[test]
+    fn matches_by_alias_case_insensitive() {
+        let mainnet = find_network("mainnet").unwrap();
+        assert!(mainnet.matches("ETH"));
+        assert!(mainnet.matches("Ethereum"));
+    }
+
+    #[test]
+    fn matches_by_chain_id() {
+        let mainnet = find_network("mainnet").unwrap();
+        assert!(mainnet.matches("1"));
+
+        let arbitrum = find_network("arbitrum").unwrap();
+        assert!(arbitrum.matches("42161"));
+    }
+
+    #[test]
+    fn does_not_match_invalid_query() {
+        let mainnet = find_network("mainnet").unwrap();
+        assert!(!mainnet.matches("polygon"));
+        assert!(!mainnet.matches("137"));
+        assert!(!mainnet.matches("unknown"));
+    }
+
+    // ==================== find_network() tests ====================
+
+    #[test]
+    fn find_network_by_name() {
+        assert!(find_network("mainnet").is_some());
+        assert!(find_network("polygon").is_some());
+        assert!(find_network("arbitrum").is_some());
+        assert!(find_network("anvil").is_some());
+    }
+
+    #[test]
+    fn find_network_by_alias() {
+        let network = find_network("eth").unwrap();
+        assert_eq!(network.name, "mainnet");
+
+        let network = find_network("arb").unwrap();
+        assert_eq!(network.name, "arbitrum");
+
+        let network = find_network("op").unwrap();
+        assert_eq!(network.name, "optimism");
+
+        let network = find_network("local").unwrap();
+        assert_eq!(network.name, "anvil");
+    }
+
+    #[test]
+    fn find_network_by_chain_id() {
+        let network = find_network("1").unwrap();
+        assert_eq!(network.name, "mainnet");
+
+        let network = find_network("137").unwrap();
+        assert_eq!(network.name, "polygon");
+
+        let network = find_network("31337").unwrap();
+        assert_eq!(network.name, "anvil");
+    }
+
+    #[test]
+    fn find_network_returns_none_for_unknown() {
+        assert!(find_network("unknown").is_none());
+        assert!(find_network("99999999").is_none());
+        assert!(find_network("").is_none());
+    }
+
+    // ==================== Network::rpc_url() tests ====================
+
+    #[test]
+    fn rpc_url_for_alchemy_network() {
+        let mainnet = find_network("mainnet").unwrap();
+        let url = mainnet.rpc_url("test-api-key");
+        assert_eq!(url, "https://eth-mainnet.g.alchemy.com/v2/test-api-key");
+    }
+
+    #[test]
+    fn rpc_url_for_different_networks() {
+        let polygon = find_network("polygon").unwrap();
+        assert_eq!(
+            polygon.rpc_url("key123"),
+            "https://polygon-mainnet.g.alchemy.com/v2/key123"
+        );
+
+        let arbitrum = find_network("arbitrum").unwrap();
+        assert_eq!(
+            arbitrum.rpc_url("key123"),
+            "https://arb-mainnet.g.alchemy.com/v2/key123"
+        );
+    }
+
+    #[test]
+    fn rpc_url_for_anvil_ignores_api_key() {
+        let anvil = find_network("anvil").unwrap();
+        let url = anvil.rpc_url("any-key");
+        assert_eq!(url, "http://127.0.0.1:8545");
+    }
+
+    #[test]
+    fn rpc_url_for_anvil_with_empty_key() {
+        let anvil = find_network("anvil").unwrap();
+        let url = anvil.rpc_url("");
+        assert_eq!(url, "http://127.0.0.1:8545");
+    }
+
+    // ==================== Network data integrity tests ====================
+
+    #[test]
+    fn all_non_local_networks_have_explorer() {
+        for network in NETWORKS.iter() {
+            if network.alchemy_subdomain.is_some() {
+                assert!(
+                    network.explorer_url.is_some(),
+                    "Network {} should have an explorer URL",
+                    network.name
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn all_non_local_networks_have_alchemy_subdomain() {
+        for network in NETWORKS.iter() {
+            if network.name != "anvil" {
+                assert!(
+                    network.alchemy_subdomain.is_some(),
+                    "Network {} should have an Alchemy subdomain",
+                    network.name
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn chain_ids_are_unique() {
+        let mut chain_ids: Vec<u64> = NETWORKS.iter().map(|n| n.chain_id).collect();
+        let original_len = chain_ids.len();
+        chain_ids.sort();
+        chain_ids.dedup();
+        assert_eq!(chain_ids.len(), original_len, "Chain IDs should be unique");
+    }
+
+    #[test]
+    fn network_names_are_unique() {
+        let mut names: Vec<&str> = NETWORKS.iter().map(|n| n.name).collect();
+        let original_len = names.len();
+        names.sort();
+        names.dedup();
+        assert_eq!(names.len(), original_len, "Network names should be unique");
+    }
+}
