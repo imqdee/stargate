@@ -68,9 +68,7 @@ enum ConfigAction {
 #[derive(Subcommand)]
 enum ConfigSetting {
     /// Set the Alchemy API key (prompts securely if not provided)
-    ApiKey {
-        key: Option<String>,
-    },
+    ApiKey { key: Option<String> },
 }
 
 fn main() {

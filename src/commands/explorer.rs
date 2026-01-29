@@ -23,7 +23,10 @@ pub fn build_explorer_url(base_url: &str, target: Option<&str>) -> String {
 pub fn run(target: Option<&str>, print: bool) {
     let network = env::var("STARGATE_NETWORK").ok();
     let Some(explorer) = env::var("BLOCK_EXPLORER").ok() else {
-        eprintln!("No block explorer available for {}.", network.as_deref().unwrap_or("unknown network"));
+        eprintln!(
+            "No block explorer available for {}.",
+            network.as_deref().unwrap_or("unknown network")
+        );
         std::process::exit(1);
     };
 

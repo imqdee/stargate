@@ -1,7 +1,10 @@
 use crate::networks::NETWORKS;
 
 pub fn run() {
-    println!("{:<20} {:<15} {:>10}   {}", "Network", "Aliases", "Chain ID", "Explorer");
+    println!(
+        "{:<20} {:<15} {:>10}   Explorer",
+        "Network", "Aliases", "Chain ID"
+    );
     println!("{}", "-".repeat(75));
 
     for network in NETWORKS.iter() {

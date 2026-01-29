@@ -1,5 +1,5 @@
 use crate::config::Config;
-use crate::networks::{find_network, Network};
+use crate::networks::{Network, find_network};
 
 /// Represents the shell exports to be generated when switching networks.
 #[derive(Debug, PartialEq)]
@@ -25,7 +25,10 @@ impl NetworkExports {
     pub fn to_shell_exports(&self) -> String {
         let mut output = String::new();
         output.push_str(&format!("export ETH_RPC_URL=\"{}\"\n", self.rpc_url));
-        output.push_str(&format!("export STARGATE_NETWORK=\"{}\"\n", self.network_name));
+        output.push_str(&format!(
+            "export STARGATE_NETWORK=\"{}\"\n",
+            self.network_name
+        ));
         output.push_str(&format!("export STARGATE_CHAIN_ID=\"{}\"\n", self.chain_id));
 
         if let Some(ref explorer) = self.explorer_url {
@@ -79,8 +82,14 @@ mod tests {
 
         assert_eq!(exports.network_name, "mainnet");
         assert_eq!(exports.chain_id, 1);
-        assert_eq!(exports.rpc_url, "https://eth-mainnet.g.alchemy.com/v2/test-key");
-        assert_eq!(exports.explorer_url, Some("https://etherscan.io".to_string()));
+        assert_eq!(
+            exports.rpc_url,
+            "https://eth-mainnet.g.alchemy.com/v2/test-key"
+        );
+        assert_eq!(
+            exports.explorer_url,
+            Some("https://etherscan.io".to_string())
+        );
     }
 
     #[test]
@@ -162,8 +171,14 @@ mod tests {
         let shell = exports.to_shell_exports();
 
         assert!(shell.contains("ETH_RPC_URL"), "Missing ETH_RPC_URL");
-        assert!(shell.contains("STARGATE_NETWORK"), "Missing STARGATE_NETWORK");
-        assert!(shell.contains("STARGATE_CHAIN_ID"), "Missing STARGATE_CHAIN_ID");
+        assert!(
+            shell.contains("STARGATE_NETWORK"),
+            "Missing STARGATE_NETWORK"
+        );
+        assert!(
+            shell.contains("STARGATE_CHAIN_ID"),
+            "Missing STARGATE_CHAIN_ID"
+        );
         assert!(shell.contains("BLOCK_EXPLORER"), "Missing BLOCK_EXPLORER");
     }
 }
