@@ -63,12 +63,25 @@ enum ConfigAction {
         #[command(subcommand)]
         setting: ConfigSetting,
     },
+    /// Get a configuration value
+    Get {
+        #[command(subcommand)]
+        setting: ConfigGetter,
+    },
 }
 
 #[derive(Subcommand)]
 enum ConfigSetting {
     /// Set the Alchemy API key (prompts securely if not provided)
     ApiKey { key: Option<String> },
+    /// Set the default network (used when starting new shells)
+    DefaultNetwork { network: String },
+}
+
+#[derive(Subcommand)]
+enum ConfigGetter {
+    /// Show the current default network
+    DefaultNetwork,
 }
 
 fn main() {
@@ -84,6 +97,12 @@ fn main() {
         Commands::Config { action } => match action {
             ConfigAction::Set { setting } => match setting {
                 ConfigSetting::ApiKey { key } => commands::config::set_api_key(key),
+                ConfigSetting::DefaultNetwork { network } => {
+                    commands::config::set_default_network(network)
+                }
+            },
+            ConfigAction::Get { setting } => match setting {
+                ConfigGetter::DefaultNetwork => commands::config::get_default_network(),
             },
         },
     }

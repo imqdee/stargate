@@ -1,4 +1,13 @@
-const SHELL_INTEGRATION: &str = r#"sg() {
+use crate::config::Config;
+
+pub fn run(shell: &str) {
+    match shell {
+        "zsh" | "bash" => {
+            let config = Config::load();
+            let default_network = config.get_default_network();
+
+            let shell_integration = format!(
+                r#"sg() {{
     case "$1" in
         switch|sw|root)
             eval "$(command stargate "$@")"
@@ -7,16 +16,15 @@ const SHELL_INTEGRATION: &str = r#"sg() {
             command stargate "$@"
             ;;
     esac
-}
+}}
 
-# Set default anvil network
-eval "$(command stargate switch anvil --silent)"
-"#;
+# Set default network
+eval "$(command stargate switch {} --silent)"
+"#,
+                default_network
+            );
 
-pub fn run(shell: &str) {
-    match shell {
-        "zsh" | "bash" => {
-            print!("{}", SHELL_INTEGRATION);
+            print!("{}", shell_integration);
         }
         _ => {
             eprintln!("Unsupported shell: {}", shell);

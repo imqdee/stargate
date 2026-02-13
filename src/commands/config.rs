@@ -31,3 +31,31 @@ fn prompt_api_key() -> String {
         }
     }
 }
+
+pub fn set_default_network(network: String) {
+    let mut config = Config::load();
+
+    match config.set_default_network(network.clone()) {
+        Ok(()) => {
+            // Show canonical name that was stored (may differ from input if alias was used)
+            let stored = config.default_network.as_ref().unwrap();
+            println!("Default network set to '{}' successfully.", stored);
+            println!("This will be used when you start a new shell.");
+        }
+        Err(e) => {
+            eprintln!("{}", e);
+            std::process::exit(1);
+        }
+    }
+}
+
+pub fn get_default_network() {
+    let config = Config::load();
+    let default = config.get_default_network();
+
+    if config.default_network.is_some() {
+        println!("Default network: {}", default);
+    } else {
+        println!("Default network: {} (system default)", default);
+    }
+}
