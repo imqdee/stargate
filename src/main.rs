@@ -21,7 +21,7 @@ enum Commands {
         shell: String,
     },
     /// Switch to a network
-    #[command(visible_alias = "s")]
+    #[command(visible_alias = "sw")]
     Switch {
         /// Network name or alias (e.g., mainnet, eth, polygon, arb)
         network: String,

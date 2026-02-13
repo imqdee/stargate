@@ -1,6 +1,6 @@
 const SHELL_INTEGRATION: &str = r#"sg() {
     case "$1" in
-        switch|s|root)
+        switch|sw|root)
             eval "$(command stargate "$@")"
             ;;
         *)

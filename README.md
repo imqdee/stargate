@@ -37,7 +37,7 @@ Config is stored at `~/.stargate/config.toml`.
 sg switch mainnet    # using name
 sg switch arb        # aliases work too
 sg switch 42161      # chain IDs work too
-sg s polygon         # using the alias
+sg sw polygon        # using the alias
 
 # Switch to local anvil
 sg root
