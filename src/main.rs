@@ -32,6 +32,9 @@ enum Commands {
     /// Print current network name and chain ID
     #[command(visible_alias = "c")]
     Current,
+    /// Print the currently active RPC URL
+    #[command(name = "current-rpc", visible_alias = "rpc")]
+    CurrentRpc,
     /// Switch to anvil (local network)
     Root {
         /// Suppress output message
@@ -91,6 +94,7 @@ fn main() {
         Commands::Init { shell } => commands::init::run(&shell),
         Commands::Switch { network, silent } => commands::switch::run(&network, silent),
         Commands::Current => commands::current::run(),
+        Commands::CurrentRpc => commands::current_rpc::run(),
         Commands::Root { silent } => commands::switch::run("anvil", silent),
         Commands::Explorer { target, print } => commands::explorer::run(target.as_deref(), print),
         Commands::List => commands::list::run(),
