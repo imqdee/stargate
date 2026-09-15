@@ -1,6 +1,7 @@
 mod commands;
 mod config;
 mod networks;
+mod provider;
 
 use clap::{Parser, Subcommand};
 
@@ -23,7 +24,8 @@ enum Commands {
     /// Switch to a network
     #[command(visible_alias = "sw")]
     Switch {
-        /// Network name or alias (e.g., mainnet, eth, polygon, arb)
+        /// Network name, alias, or chain ID (e.g., mainnet, eth, arb, 42161).
+        /// An unlisted chain ID is routed through routeme.
         network: String,
         /// Suppress output message
         #[arg(short, long)]
@@ -75,16 +77,25 @@ enum ConfigAction {
 
 #[derive(Subcommand)]
 enum ConfigSetting {
-    /// Set the Alchemy API key (prompts securely if not provided)
-    ApiKey { key: Option<String> },
+    /// Set the API key for a provider (prompts securely if not provided)
+    ApiKey {
+        key: Option<String>,
+        /// Provider to set the key for (defaults to the active provider)
+        #[arg(short, long)]
+        provider: Option<String>,
+    },
     /// Set the default network (used when starting new shells)
     DefaultNetwork { network: String },
+    /// Set the RPC provider (alchemy, routeme)
+    Provider { provider: String },
 }
 
 #[derive(Subcommand)]
 enum ConfigGetter {
     /// Show the current default network
     DefaultNetwork,
+    /// Show the current RPC provider
+    Provider,
 }
 
 fn main() {
@@ -100,13 +111,17 @@ fn main() {
         Commands::List => commands::list::run(),
         Commands::Config { action } => match action {
             ConfigAction::Set { setting } => match setting {
-                ConfigSetting::ApiKey { key } => commands::config::set_api_key(key),
+                ConfigSetting::ApiKey { key, provider } => {
+                    commands::config::set_api_key(key, provider)
+                }
                 ConfigSetting::DefaultNetwork { network } => {
                     commands::config::set_default_network(network)
                 }
+                ConfigSetting::Provider { provider } => commands::config::set_provider(provider),
             },
             ConfigAction::Get { setting } => match setting {
                 ConfigGetter::DefaultNetwork => commands::config::get_default_network(),
+                ConfigGetter::Provider => commands::config::get_provider(),
             },
         },
     }

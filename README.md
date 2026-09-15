@@ -18,17 +18,39 @@ Restart your shell or run `source ~/.zshrc` to activate.
 
 ## Configuration
 
-Set your [Alchemy](https://www.alchemy.com/) API key:
+Stargate supports two RPC providers: [Alchemy](https://www.alchemy.com/) (default) and [routeme.sh](https://routeme.sh/). Keys are stored per provider, so you can keep both and switch freely.
+
+Set an API key (targets the active provider by default):
 
 ```bash
 # Interactive mode (recommended - input is hidden)
 stargate config set api-key
 
 # Or pass directly (visible in shell history)
-stargate config set api-key YOUR_ALCHEMY_KEY
+stargate config set api-key YOUR_KEY
+
+# Target a specific provider explicitly
+stargate config set api-key --provider routeme YOUR_ROUTEME_KEY
 ```
 
-Config is stored at `~/.stargate/config.toml`.
+Choose the provider used to build RPC URLs:
+
+```bash
+stargate config set provider routeme   # or: alchemy
+stargate config get provider
+```
+
+Config is stored at `~/.stargate/config.toml`:
+
+```toml
+provider = "routeme"
+
+[keys]
+alchemy = "your-alchemy-key"
+routeme = "your-routeme-key"
+```
+
+A pre-existing `api_key` from older versions is read as the Alchemy key and folded into `[keys]` on the next write.
 
 ## Usage
 
@@ -38,6 +60,10 @@ sg switch mainnet    # using name
 sg switch arb        # aliases work too
 sg switch 42161      # chain IDs work too
 sg sw polygon        # using the alias
+
+# Any chain ID not in the curated list is routed through routeme.sh
+# (requires a routeme key)
+sg switch 80094      # Berachain, unlisted
 
 # Switch to local anvil
 sg root
@@ -69,6 +95,8 @@ sg e                      # using the alias
 | linea    | -             | 59144    |
 | ink      | -             | 57073    |
 | anvil    | local         | 31337    |
+
+This table lists the Alchemy-curated networks. With the `routeme` provider, any of its supported chain IDs works, including chains not listed here (pass the chain ID directly).
 
 ## Environment Variables
 

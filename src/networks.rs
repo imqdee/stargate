@@ -1,3 +1,8 @@
+use crate::provider::Provider;
+
+/// Chain ID of the local anvil dev node.
+pub const ANVIL_CHAIN_ID: u64 = 31337;
+
 pub struct Network {
     pub name: &'static str,
     pub aliases: &'static [&'static str],
@@ -7,11 +12,19 @@ pub struct Network {
 }
 
 impl Network {
-    pub fn rpc_url(&self, api_key: &str) -> String {
-        match self.alchemy_subdomain {
-            Some(subdomain) => format!("https://{}.g.alchemy.com/v2/{}", subdomain, api_key),
-            None => "http://127.0.0.1:8545".to_string(),
+    /// A local node (anvil) served from localhost, needing no provider or key.
+    pub fn is_local(&self) -> bool {
+        self.chain_id == ANVIL_CHAIN_ID
+    }
+
+    /// Builds the RPC URL via `provider`. Local networks always resolve to
+    /// localhost; otherwise the provider decides, returning `None` when it
+    /// cannot serve this network (Alchemy without a subdomain).
+    pub fn rpc_url(&self, provider: Provider, api_key: &str) -> Option<String> {
+        if self.is_local() {
+            return Some("http://127.0.0.1:8545".to_string());
         }
+        provider.rpc_url(self, api_key)
     }
 
     pub fn matches(&self, query: &str) -> bool {
@@ -318,37 +331,62 @@ mod tests {
     #[test]
     fn rpc_url_for_alchemy_network() {
         let mainnet = find_network("mainnet").unwrap();
-        let url = mainnet.rpc_url("test-api-key");
-        assert_eq!(url, "https://eth-mainnet.g.alchemy.com/v2/test-api-key");
+        let url = mainnet.rpc_url(Provider::Alchemy, "test-api-key");
+        assert_eq!(
+            url,
+            Some("https://eth-mainnet.g.alchemy.com/v2/test-api-key".to_string())
+        );
+    }
+
+    #[test]
+    fn rpc_url_for_routeme_network() {
+        let mainnet = find_network("mainnet").unwrap();
+        assert_eq!(
+            mainnet.rpc_url(Provider::RouteMe, "key123"),
+            Some("https://lb.routeme.sh/rpc/1/key123".to_string())
+        );
     }
 
     #[test]
     fn rpc_url_for_different_networks() {
         let polygon = find_network("polygon").unwrap();
         assert_eq!(
-            polygon.rpc_url("key123"),
-            "https://polygon-mainnet.g.alchemy.com/v2/key123"
+            polygon.rpc_url(Provider::Alchemy, "key123"),
+            Some("https://polygon-mainnet.g.alchemy.com/v2/key123".to_string())
         );
 
         let arbitrum = find_network("arbitrum").unwrap();
         assert_eq!(
-            arbitrum.rpc_url("key123"),
-            "https://arb-mainnet.g.alchemy.com/v2/key123"
+            arbitrum.rpc_url(Provider::Alchemy, "key123"),
+            Some("https://arb-mainnet.g.alchemy.com/v2/key123".to_string())
         );
     }
 
     #[test]
-    fn rpc_url_for_anvil_ignores_api_key() {
+    fn rpc_url_for_anvil_ignores_provider_and_key() {
         let anvil = find_network("anvil").unwrap();
-        let url = anvil.rpc_url("any-key");
-        assert_eq!(url, "http://127.0.0.1:8545");
+        assert_eq!(
+            anvil.rpc_url(Provider::Alchemy, "any-key"),
+            Some("http://127.0.0.1:8545".to_string())
+        );
+        assert_eq!(
+            anvil.rpc_url(Provider::RouteMe, "any-key"),
+            Some("http://127.0.0.1:8545".to_string())
+        );
     }
 
     #[test]
     fn rpc_url_for_anvil_with_empty_key() {
         let anvil = find_network("anvil").unwrap();
-        let url = anvil.rpc_url("");
-        assert_eq!(url, "http://127.0.0.1:8545");
+        let url = anvil.rpc_url(Provider::Alchemy, "");
+        assert_eq!(url, Some("http://127.0.0.1:8545".to_string()));
+    }
+
+    #[test]
+    fn is_local_only_for_anvil() {
+        assert!(find_network("anvil").unwrap().is_local());
+        assert!(!find_network("mainnet").unwrap().is_local());
+        assert!(!find_network("base").unwrap().is_local());
     }
 
     // ==================== Network data integrity tests ====================
@@ -356,7 +394,7 @@ mod tests {
     #[test]
     fn all_non_local_networks_have_explorer() {
         for network in NETWORKS.iter() {
-            if network.alchemy_subdomain.is_some() {
+            if !network.is_local() {
                 assert!(
                     network.explorer_url.is_some(),
                     "Network {} should have an explorer URL",
@@ -367,9 +405,13 @@ mod tests {
     }
 
     #[test]
-    fn all_non_local_networks_have_alchemy_subdomain() {
+    fn all_curated_networks_have_alchemy_subdomain() {
+        // The curated table is Alchemy-sourced today. A routeme-only network
+        // (subdomain None) is supported by the plumbing but not yet present, so
+        // this guards that a new entry consciously supplies a subdomain or this
+        // invariant is updated alongside it.
         for network in NETWORKS.iter() {
-            if network.name != "anvil" {
+            if !network.is_local() {
                 assert!(
                     network.alchemy_subdomain.is_some(),
                     "Network {} should have an Alchemy subdomain",
